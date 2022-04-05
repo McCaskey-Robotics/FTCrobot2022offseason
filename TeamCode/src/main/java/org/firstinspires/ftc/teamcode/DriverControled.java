@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -17,6 +19,11 @@ public class DriverControled extends LinearOpMode {
         DriveWheels drive = new DriveWheels(hardwareMap);
         EncoderWheels encoder = new EncoderWheels(hardwareMap);
 
+        FtcDashboard dashboard;
+
+        dashboard = FtcDashboard.getInstance();
+        dashboard.setTelemetryTransmissionInterval(25);
+
         waitForStart();
 
 
@@ -27,6 +34,10 @@ public class DriverControled extends LinearOpMode {
                     gamepad1.left_stick_x,
                     gamepad1.right_stick_x
             );
+
+            encoder.updatePosition();
+
+            encoder.drawRobot(dashboard);
 
             telemetry.addData("encoders",encoder);
             telemetry.update();
