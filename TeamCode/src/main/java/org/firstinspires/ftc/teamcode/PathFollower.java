@@ -4,40 +4,96 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class PathFollower {
-    Path path;
+    DriveWheels driveWheels;
+    EncoderWheels encoderWheels;
+    Path currentpath;
 
-    enum states {
-        DRIVING,
-        FINISHED
+    //0 to 1
+    double maxVelocity = 0.5;
+
+    //distance to start slowing down
+    double accelerationDistance = 10;
+
+
+    enum state {
+        Following,
+        Idle,
     }
 
-    states state = states.DRIVING;
+    state currentState = state.Idle;
 
-    public void update(double x, double y, double theta){
-        switch(state){
-            case DRIVING:
-                if(path.isFinished()){
-                    state = states.FINISHED;
-                }
-                break;
-            case FINISHED:
-                break;
+    public PathFollower(DriveWheels driveWheels,EncoderWheels encoderWheels) {
+        this.driveWheels = driveWheels;
+        this.encoderWheels = encoderWheels;
+    }
+
+    //follows path
+    public void FollowPathAsync(Path currentpath){
+        this.currentpath = currentpath;
+        currentState = state.Following;
+    }
+
+    //follows path
+    public void FollowPath(Path currentpath){
+        FollowPathAsync(currentpath);
+        while (!Thread.currentThread().isInterrupted() && isBusy())
+            update();
+    }
+
+    //return if currently following a path
+    public boolean isBusy(){
+        return currentState == state.Following;
+    }
+
+    //cancel the following
+    public void cancleFollowing(){
+        currentState = state.Idle;
+    }
+
+    //update wheel speeds must be called in a loop while following a path from zachPathGenerator
+    public void update(){
+        if(currentState == state.Following){
+            double power = 1;
+
+            double DistanceToTarget = getDistance(encoderWheels.getCurrentPosition(), currentpath.endPose);
+
+            //if we are close to target start reducing power
+            if(DistanceToTarget < accelerationDistance){
+                //start slowing down always keep power over 0.1
+                //graph I made: motorPower = y, DistanceToTarget = x
+                //https://www.desmos.com/calculator/9qcrvbhcsn
+                power = ((0.9 / accelerationDistance) * DistanceToTarget) + 0.1;
+
+            }
+            power *= maxVelocity;
+
+            //drive at power towards the target while turning towards the target heading
         }
     }
 
-    public PathFollower() {
-        this.path = new Path();
+    public Path getPath() {
+        return currentpath;
     }
 
-    public PathFollower(Path path) {
-        this.path = path;
+    public void setMaxVelocity(double maxVelocity) {
+        this.maxVelocity = maxVelocity;
     }
 
-    public void setPath(Path path) {
-        this.path = path;
+    public double getMaxVelocity() {
+        return maxVelocity;
     }
 
-    public void update(){
-
+    public void setAccelerationDistance(double accelerationDistance) {
+        this.accelerationDistance = accelerationDistance;
     }
+
+    public double getAccelerationDistance() {
+        return accelerationDistance;
+    }
+
+    //uses pythagorean theorem to find distance between two pose2d
+    public double getDistance(Pose2d pose1, Pose2d pose2){
+        return Math.sqrt(Math.pow(pose1.getX() - pose2.getX(), 2) + Math.pow(pose1.getY() - pose2.getY(), 2));
+    }
+
 }

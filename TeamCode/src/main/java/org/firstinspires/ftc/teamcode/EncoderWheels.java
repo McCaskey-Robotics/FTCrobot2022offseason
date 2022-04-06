@@ -48,6 +48,10 @@ public class EncoderWheels {
         this.heading = heading;
     }
 
+    public Pose2d getCurrentPosition() {
+        return new Pose2d(x_pos, y_pos, heading);
+    }
+
     public void updatePosition() {
 
         double left_encoder_pos = encoderPositionToInches(-LeftTrackingWheel.getCurrentPosition());
