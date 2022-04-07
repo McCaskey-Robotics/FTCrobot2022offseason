@@ -37,4 +37,10 @@ public class DriveWheels {
         leftBack.setPower(v3);
         rightBack.setPower(v4);
     }
+    public void stopMotors(){
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+    }
 }

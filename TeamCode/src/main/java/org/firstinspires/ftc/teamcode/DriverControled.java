@@ -18,26 +18,41 @@ public class DriverControled extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         DriveWheels drive = new DriveWheels(hardwareMap);
         EncoderWheels encoder = new EncoderWheels(hardwareMap);
+        PathFollower pathFollower = new PathFollower(drive,encoder);
 
         FtcDashboard dashboard;
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
 
+        pathFollower.FollowPathAsync(new Path(new Pose2d(0,0,0),new Pose2d(20,20,0)));
+
         waitForStart();
 
 
         while (!isStopRequested()) {
 
-            drive.setMotorPowers(
+
+
+            if(gamepad1.left_bumper){
+                pathFollower.update();
+            }
+            else{
+                drive.setMotorPowers(
                     gamepad1.left_stick_y,
                     gamepad1.left_stick_x,
-                    gamepad1.right_stick_x
-            );
+                    gamepad1.right_stick_x);
+            }
+
+            if(gamepad1.right_bumper){
+                encoder.setPosition(0,0,0);
+            }
+
+            pathFollower.updateTheta();
 
             encoder.updatePosition();
 
-            encoder.drawRobot(dashboard);
+            pathFollower.drawPath(dashboard);
 
             telemetry.addData("encoders",encoder);
             telemetry.update();

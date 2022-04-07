@@ -86,7 +86,7 @@ public class EncoderWheels {
         TelemetryPacket packet = new TelemetryPacket();
         packet.fieldOverlay()
                 .setStrokeWidth(1)
-                .strokeCircle(x_pos,  y_pos, 10)
+                .strokeCircle(x_pos,  y_pos, 9)
                 .strokeLine(x_pos,y_pos,x_pos + Math.cos(heading) * 10,y_pos + Math.sin(heading) * 10);
 
         dashboard.sendTelemetryPacket(packet);
