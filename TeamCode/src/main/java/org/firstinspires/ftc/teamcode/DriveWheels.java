@@ -5,22 +5,23 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
 public class DriveWheels {
-    private DcMotor leftFront;
-    private DcMotor rightFront;
-    private DcMotor leftBack;
-    private DcMotor rightBack;
+    private DcMotorEx leftFront;
+    private DcMotorEx rightFront;
+    private DcMotorEx leftBack;
+    private DcMotorEx rightBack;
 
 
     public DriveWheels(HardwareMap hardwareMap) {
-        leftFront = hardwareMap.get(DcMotor.class, "0");
-        rightFront = hardwareMap.get(DcMotor.class, "1");
-        leftBack = hardwareMap.get(DcMotor.class, "3");
-        rightBack = hardwareMap.get(DcMotor.class, "2");
+        leftFront = hardwareMap.get(DcMotorEx.class, "0");
+        rightFront = hardwareMap.get(DcMotorEx.class, "1");
+        leftBack = hardwareMap.get(DcMotorEx.class, "3");
+        rightBack = hardwareMap.get(DcMotorEx.class, "2");
     }
 
     public void setMotorPowers(double LY, double LX, double RX){
@@ -32,10 +33,20 @@ public class DriveWheels {
         double v3 = r * Math.sin(robotAngle) - RX;
         double v4 = r * Math.cos(robotAngle) + RX;
 
-        leftFront.setPower(v1);
-        rightFront.setPower(v2);
-        leftBack.setPower(v3);
-        rightBack.setPower(v4);
+        double max = Math.max(Math.max(v1,v2),Math.max(v3,v4));
+
+        if(max > 1){
+            leftFront.setPower(v1 / max);
+            rightFront.setPower(v2 / max);
+            leftBack.setPower(v3 / max);
+            rightBack.setPower(v4 / max);
+        }
+        else{
+            leftFront.setPower(v1);
+            rightFront.setPower(v2);
+            leftBack.setPower(v3);
+            rightBack.setPower(v4);
+        }
     }
     public void stopMotors(){
         leftFront.setPower(0);

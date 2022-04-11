@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,46 +12,25 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-@TeleOp(group = "drive")
-public class DriverControled extends LinearOpMode {
+@Autonomous()
+public class TestAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         DriveWheels drive = new DriveWheels(hardwareMap);
         EncoderWheels encoder = new EncoderWheels(hardwareMap);
-
         PathFollower pathFollower = new PathFollower(drive,encoder);
 
-        pathFollower.FollowPathAsync(new Path(new Pose2d(0,0,0),new Pose2d(20,20,0)));
+        Path path1 = new Path(new Pose2d(0,0,0),new Pose2d(20,20,Math.toRadians(90)));
+        Path path2 = new Path(path1.getEndPose(), new Pose2d(20,-20,0));
+        Path path3 = new Path(path2.getEndPose(), path1.getStartPose());
+
+        pathFollower.setMaxVelocity(0.5);
+        pathFollower.setAccelerationDistance(5);
 
         waitForStart();
 
-
-        while (!isStopRequested()) {
-
-
-
-            if(gamepad1.left_bumper){
-                pathFollower.update();
-            }
-            else{
-                drive.setMotorPowers(
-                    gamepad1.left_stick_y,
-                    gamepad1.left_stick_x,
-                    gamepad1.right_stick_x);
-            }
-
-            if(gamepad1.right_bumper){
-                encoder.setPosition(0,0,0);
-            }
-
-            pathFollower.updateTheta();
-
-            encoder.updatePosition();
-
-            pathFollower.drawPath();
-
-            telemetry.addData("encoders",encoder);
-            telemetry.update();
+        if (opModeIsActive()) {
+            pathFollower.FollowPath(path1);
 
         }
     }

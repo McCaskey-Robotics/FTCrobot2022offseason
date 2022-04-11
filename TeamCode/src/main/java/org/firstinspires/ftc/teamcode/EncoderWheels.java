@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -12,9 +13,9 @@ public class EncoderWheels {
     public static double track_width = 16;
     public static double forward_offset = 4;
 
-    private DcMotor LeftTrackingWheel;
-    private DcMotor RightTrackingWheel;
-    private DcMotor FrontTrackingWheel;
+    private DcMotorEx LeftTrackingWheel;
+    private DcMotorEx RightTrackingWheel;
+    private DcMotorEx FrontTrackingWheel;
 
     double x_pos = 0;
     double y_pos = 0;
@@ -30,9 +31,9 @@ public class EncoderWheels {
 
 
     public EncoderWheels(HardwareMap hardwareMap) {
-        LeftTrackingWheel = hardwareMap.get(DcMotor.class, "2");
-        RightTrackingWheel = hardwareMap.get(DcMotor.class, "0");
-        FrontTrackingWheel = hardwareMap.get(DcMotor.class, "1");
+        LeftTrackingWheel = hardwareMap.get(DcMotorEx.class, "2");
+        RightTrackingWheel = hardwareMap.get(DcMotorEx.class, "0");
+        FrontTrackingWheel = hardwareMap.get(DcMotorEx.class, "1");
     }
 
     public String toString() {
@@ -90,5 +91,12 @@ public class EncoderWheels {
                 .strokeLine(x_pos,y_pos,x_pos + Math.cos(heading) * 10,y_pos + Math.sin(heading) * 10);
 
         dashboard.sendTelemetryPacket(packet);
+    }
+    public double getAverageVelocity(){
+        double v = 0;
+        v += LeftTrackingWheel.getVelocity();
+        v += RightTrackingWheel.getVelocity();
+        v += FrontTrackingWheel.getVelocity();
+        return v / 3;
     }
 }
