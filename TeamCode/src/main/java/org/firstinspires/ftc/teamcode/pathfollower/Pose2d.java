@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.pathfollower;
 
 import com.acmerobotics.dashboard.config.Config;
 
@@ -10,6 +10,12 @@ public class Pose2d {
         this.x = x;
         this.y = y;
         this.heading = heading;
+    }
+
+    public Pose2d() {
+        this.x = 0;
+        this.y = 0;
+        this.heading = 0;
     }
 
     public Pose2d(Pose2d p) {

@@ -1,11 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.pathfollower;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
@@ -43,10 +41,10 @@ public class EncoderWheels {
         return "Left: " + Left + "\nRight: " + Right + "\nFront: " + Front + "\nX" + x_pos + "\nY" + y_pos + "\nHeading" + heading;
     }
 
-    public void setPosition(double x_pos, double y_pos, double heading) {
-        this.x_pos = x_pos;
-        this.y_pos = y_pos;
-        this.heading = heading;
+    public void setPosition(Pose2d pose2d) {
+        x_pos = pose2d.getX();
+        y_pos = pose2d.getY();
+        heading = pose2d.getHeading();
     }
 
     public Pose2d getCurrentPosition() {

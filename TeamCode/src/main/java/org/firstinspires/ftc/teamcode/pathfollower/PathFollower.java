@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode;
-
-import android.graphics.Color;
+package org.firstinspires.ftc.teamcode.pathfollower;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -23,7 +21,9 @@ public class PathFollower {
     double theta = 0;
 
     //allowed error
-    double allowedError = 2;
+    double allowedError = 0.5;
+    double allowedHeadingError = Math.toRadians(5);
+
 
     enum state {
         Following,
@@ -64,7 +64,7 @@ public class PathFollower {
         currentState = state.Idle;
     }
 
-    //update wheel speeds must be called in a loop while following a path from zachPathGenerator
+    //update wheel speeds must be called in a loop while following a path
     public void update(){
 
         encoderWheels.updatePosition();
@@ -86,17 +86,18 @@ public class PathFollower {
 
             updateTheta();
 
-            double theta2 = theta - encoderWheels.heading;
+            double theta2 = theta - encoderWheels.getCurrentPosition().getHeading();
 
             double x = Math.cos(theta2 - Math.PI / 2) * -power;
             double y = Math.sin(theta2 - Math.PI / 2) * power;
 
             double headingDiffrence = getHeadingDiffrence();
+            double headingTarget = map(getPercent(), 0, 1, currentpath.getEndPose().getHeading(), currentpath.getStartPose().getHeading());
 
-            double h = 0;
+            double h = encoderWheels.getCurrentPosition().getHeading() - headingTarget;
 
             //if we have reached our target position
-            if(DistanceToTarget > allowedError) {
+            if(DistanceToTarget > allowedError || Math.abs(currentpath.endPose.heading - encoderWheels.getCurrentPosition().getHeading()) > allowedHeadingError) {
                 //set the motor powers
                 driveWheels.setMotorPowers(y, x, h);
             }
@@ -155,7 +156,12 @@ public class PathFollower {
     public double getPercent(){
         double DistanceToTarget = getDistance(encoderWheels.getCurrentPosition(), currentpath.endPose);
         double PathDistance = getDistance(currentpath.startPose, currentpath.endPose);
-        return 0; //TODO
+        return DistanceToTarget / PathDistance;
+    }
+
+    //map
+    public double map(double x, double in_min, double in_max, double out_min, double out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
     public void drawPath() {
@@ -170,9 +176,10 @@ public class PathFollower {
 
         TelemetryPacket packet = new TelemetryPacket();
 
+        packet.addLine("State: " + currentState.toString());
         packet.addLine("X: " + encoderWheels.getCurrentPosition().getX());
         packet.addLine("Y: " + encoderWheels.getCurrentPosition().getY());
-        packet.addLine("Heading: " + encoderWheels.getCurrentPosition().getHeading());
+        packet.addLine("Heading: " + Math.toDegrees(encoderWheels.getCurrentPosition().getHeading()));
 
         packet.fieldOverlay()
                 //start position
