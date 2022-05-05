@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.pathfollower.DriveWheels;
 import org.firstinspires.ftc.teamcode.pathfollower.EncoderWheels;
@@ -18,9 +19,11 @@ import org.firstinspires.ftc.teamcode.pathfollower.Pose2d;
  */
 @TeleOp(name = "Driver Controlled")
 public class DriverControled extends LinearOpMode {
+    DcMotorSimple pivotPoint;
     @Override
     public void runOpMode() throws InterruptedException {
         DriveWheels drive = new DriveWheels(hardwareMap);
+        pivotPoint = hardwareMap.get(DcMotorSimple.class,"pivotPoint");
 
         waitForStart();
 
@@ -30,6 +33,9 @@ public class DriverControled extends LinearOpMode {
                     gamepad1.left_stick_y,
                     gamepad1.left_stick_x,
                     gamepad1.right_stick_x);
+
+            pivotPoint.setPower(gamepad1.left_trigger - gamepad1.right_trigger);
+
         }
     }
 }
