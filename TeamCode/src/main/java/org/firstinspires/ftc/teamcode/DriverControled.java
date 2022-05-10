@@ -48,6 +48,11 @@ public class DriverControled extends LinearOpMode {
         rightLED_G .setMode(DigitalChannel.Mode.OUTPUT);
         rightLED_R .setMode(DigitalChannel.Mode.OUTPUT);
 
+        leftLED_G.setState(true);
+        leftLED_R.setState(true);
+        rightLED_G.setState(true);
+        rightLED_R.setState(true);
+
 
         waitForStart();
 
